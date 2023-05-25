@@ -15,7 +15,6 @@ PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 class RedactingFormatter(logging.Formatter):
     """Redacting Formatter class for log messages."""
-    
     REDACTION = "***"
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
@@ -27,7 +26,7 @@ class RedactingFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """
-        Formats the log message by redacting sensitive fields using `filter_datum`.
+        Formats log message by redacting sensitive fields using `filter_datum`
         """
         return filter_datum(self.fields, self.REDACTION,
                             super().format(record), self.SEPARATOR)
@@ -42,7 +41,8 @@ def filter_datum(fields: List[str], redaction: str,
         fields: list of strings representing all fields to obfuscate.
         redaction: string representing by what the field will be obfuscated.
         message: string representing the log line.
-        separator: string represens d character separating all fields in the log line.
+        separator: a string representing the character separating all
+                    fields in the log line
 
     Returns:
         The obfuscated log message.
