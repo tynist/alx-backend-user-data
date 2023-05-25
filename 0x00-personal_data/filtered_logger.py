@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-filter_datum: Contains functions for filtering sensitive data and logging.
+Personal data: Contains functions for filtering sensitive data and logging
 """
 
-from typing import List
 import re
 import logging
+from typing import List
 import mysql.connector
 import os
 
@@ -43,7 +43,6 @@ def filter_datum(fields: List[str], redaction: str,
         message: string representing the log line.
         separator: a string representing the character separating all
                     fields in the log line
-
     Returns:
         The obfuscated log message.
     """
@@ -64,8 +63,10 @@ def get_logger() -> logging.Logger:
     logger.setLevel(logging.INFO)
     logger.propagate = False
 
-    stream_handler = logging.StreamHandler()
-    stream_handler.setFormatter(RedactingFormatter(PII_FIELDS))
+    stream_handler = logging.StreamHandler(sys.stdout)
+    formatter = RedactingFormatter(fields=PII_FIELDS)
+    formatter = RedactingFormatter(fields=PII_FIELDS)
+    
     logger.addHandler(stream_handler)
 
     return logger
