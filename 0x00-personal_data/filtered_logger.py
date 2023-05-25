@@ -66,7 +66,6 @@ def get_logger() -> logging.Logger:
     stream_handler = logging.StreamHandler(sys.stdout)
     formatter = RedactingFormatter(fields=PII_FIELDS)
     formatter = RedactingFormatter(fields=PII_FIELDS)
-    
     logger.addHandler(stream_handler)
 
     return logger
