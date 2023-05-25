@@ -36,7 +36,6 @@ def filter_datum(fields: List[str], redaction: str,
                  message: str, separator: str) -> str:
     """
     Returns the log message with sensitive fields obfuscated.
-
     Args:
         fields: list of strings representing all fields to obfuscate.
         redaction: string representing by what the field will be obfuscated.
@@ -47,15 +46,14 @@ def filter_datum(fields: List[str], redaction: str,
         The obfuscated log message.
     """
     for field in fields:
-        message = re.sub(rf"{field}=.*?{separator}",
+        obfuscated_msg = re.sub(rf"{field}=.*?{separator}",
                          f"{field}={redaction}{separator}", message)
-    return message
+    return obfuscated_msg
 
 
 def get_logger() -> logging.Logger:
     """
     Creates a logger named "user_data" and returns it.
-
     Returns:
         The created logger.
     """
@@ -73,7 +71,6 @@ def get_logger() -> logging.Logger:
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """
     Returns a MySQL database connection.
-
     Returns:
         The MySQL database connector.
     """
