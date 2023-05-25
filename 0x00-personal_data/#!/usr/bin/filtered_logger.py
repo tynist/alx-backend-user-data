@@ -1,47 +1,112 @@
 #!/usr/bin/env python3
 """
-Personal data
+filter_datum: Contains functions for filtering sensitive data and logging.
 """
+
+from typing import List
 import re
 import logging
+import mysql.connector
+import os
+
+
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
 class RedactingFormatter(logging.Formatter):
-    """Redacting Formatter class"""
+    """Redacting Formatter class for log messages."""
+    
     REDACTION = "***"
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
-    def __init__(self, fields):
-        """Initialize RedactingFormatter object."""
-        super(RedactingFormatter, self).__init__(self.FORMAT)
+    def __init__(self, fields: List[str]):
+        """Constructor for the RedactingFormatter class."""
         self.fields = fields
+        super(RedactingFormatter, self).__init__(self.FORMAT)
 
     def format(self, record: logging.LogRecord) -> str:
-        """Format the log record, redacting specified fields."""
-        log_message = super().format(record)
-        return filter_datum(self.fields, self.REDACTION, log_message, self.SEPARATOR)
+        """
+        Formats the log message by redacting sensitive fields using `filter_datum`.
+        """
+        return filter_datum(self.fields, self.REDACTION,
+                            super().format(record), self.SEPARATOR)
 
 
-def filter_datum(fields, redaction, message, separator):
+def filter_datum(fields: List[str], redaction: str,
+                 message: str, separator: str) -> str:
     """
-    Obfuscates the specified fields in the log message.
+    Returns the log message with sensitive fields obfuscated.
 
-    Arguments:
-    - fields: list of strings representing all fields to obfuscate.
-    - redaction: string representing by what the field will be obfuscated.
-    - message: string represents the log line.
-    - separator: string representing by which character separats all fields
+    Args:
+        fields: list of strings representing all fields to obfuscate.
+        redaction: string representing by what the field will be obfuscated.
+        message: string representing the log line.
+        separator: string represens d character separating all fields in the log line.
 
     Returns:
-    - The obfuscated log message.
-
+        The obfuscated log message.
     """
-    # Create an expression pattern to match the fields with the seperator
-    pattern = r"(?<={}=)[^{}]+".format(separator, separator)
+    for field in fields:
+        message = re.sub(rf"{field}=.*?{separator}",
+                         f"{field}={redaction}{separator}", message)
+    return message
 
-    # substitution using the regular expression pattern & redaction value
-    obfuscated_message = re.sub(pattern, redaction, message)
 
-    # Return the obfuscated log message
-    return obfuscated_message
+def get_logger() -> logging.Logger:
+    """
+    Creates a logger named "user_data" and returns it.
+
+    Returns:
+        The created logger.
+    """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(RedactingFormatter(PII_FIELDS))
+    logger.addHandler(stream_handler)
+
+    return logger
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """
+    Returns a MySQL database connection.
+
+    Returns:
+        The MySQL database connector.
+    """
+    user = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
+    password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
+    host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
+    database = os.getenv('PERSONAL_DATA_DB_NAME')
+
+    connector = mysql.connector.connect(
+        user=user,
+        password=password,
+        host=host,
+        database=database)
+
+    return connector
+
+
+def main():
+    """
+    The main function that retrieves data from the database and prints it.
+    """
+    db_connection = get_db()
+    cursor = db_connection.cursor()
+    cursor.execute("SELECT * FROM users")
+    data = cursor.fetchall()
+    for row in data:
+        for column_value in row:
+            print(column_value)
+
+    cursor.close()
+    db_connection.close()
+
+
+if __name__ == '__main__':
+    main()
