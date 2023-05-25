@@ -46,9 +46,9 @@ def filter_datum(fields: List[str], redaction: str,
         The obfuscated log message.
     """
     for field in fields:
-        obfuscated_msg = re.sub(rf"{field}=.*?{separator}",
+        message = re.sub(rf"{field}=.*?{separator}",
                          f"{field}={redaction}{separator}", message)
-    return obfuscated_msg
+    return message
 
 
 def get_logger() -> logging.Logger:
