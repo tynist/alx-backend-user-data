@@ -16,25 +16,21 @@ class Auth():
         Require authorithation by determining that
         a given path requires authentication or not
         """
-        if path is None:
+        if path is None or excluded_paths is None or not len(excluded_paths):
             return True
-        elif excluded_paths is None or excluded_paths == []:
-            return True
-        elif path in excluded_paths:
+        if path[-1] != '/':
+            path += '/'
+        for i in excluded_paths:
+            if i.endswith('*'):
+                if path.startswith(i[:1]):
+                    return False
+        if path in excluded_paths:
             return False
         else:
-            for i in excluded_paths:
-                if i.startswith(path):
-                    return False
-                if path.startswith(i):
-                    return False
-                if i[-1] == "*":
-                    if path.startswith(i[:-1]):
-                        return False
-        return True
+            return True
 
     def authorization_header(self, request=None) -> str:
-        """authorization header"""
+        ''' authorization header '''
         if request is None:
             return None
         if not request.headers.get("Authorization"):
@@ -42,11 +38,11 @@ class Auth():
         return request.headers.get("Authorization")
 
     def current_user(self, request=None) -> TypeVar('User'):
-        """current user"""
+        ''' current user '''
         return None
 
     def session_cookie(self, request=None):
-        """Returns cookies"""
+        ''' returns cookies'''
         if request is None:
             return None
         session_id = getenv('SESSION_NAME')
