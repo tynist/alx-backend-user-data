@@ -21,11 +21,13 @@ class SessionAuth(Auth):
         Returns:
             The generated session ID.
         """
-        if user_id is None or type(user_id) != str:
+        if user_id is None or type(user_id) is not str:
             return None
-        session_id = str(uuid4())
-        SessionAuth.user_id_by_session_id[user_id] = session_id
-        return session_id
+
+        ID = str(uuid4())
+        self.user_id_by_session_id[ID] = user_id
+        return ID
+
 
     def user_id_for_session_id(self, session_id: str = None) -> str:
         """
@@ -35,9 +37,9 @@ class SessionAuth(Auth):
         Returns:
             The associated user ID, or None if not found.
         """
-        if not session_id or type(session_id) != str:
-            return
-        return SessionAuth.user_id_by_session_id.get(session_id, None)
+        if session_id is None or type(session_id) is not str:
+            return None
+        return self.user_id_by_session_id.get(session_id)
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
