@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """
-SessionExpAuth module for the API
+Session ExpAuthentication module for the API
 """
 from datetime import datetime, timedelta
 from os import getenv
-
 from api.v1.auth.session_auth import SessionAuth
 
 
 class SessionExpAuth(SessionAuth):
-    """A session auth class with expiration to manage the API authentication"""
+    """
+    A session auth class with expiration to manage the API authentication
+    """
 
     def __init__(self):
         """Initialize the session auth from SESSION_DURATION env variable"""
@@ -18,7 +19,13 @@ class SessionExpAuth(SessionAuth):
             duration) if duration and duration.isnumeric() else 0
 
     def create_session(self, user_id: str = None) -> str:
-        """Creates a Session ID for a user_id"""
+        """
+        Creates a Session ID for a user_id.
+        Args:
+            user_id: The ID of the user.
+        Returns:
+            The generated session ID, or None if it cannot be created.
+        """
         session_id = super().create_session(user_id)
         if session_id is None:
             return None
@@ -29,7 +36,14 @@ class SessionExpAuth(SessionAuth):
         return session_id
 
     def user_id_for_session_id(self, session_id=None):
-        """Returns a User ID based on a Session ID"""
+        """
+        Returns a User ID based on a Session ID.
+        Args:
+            session_id: The ID of the session.
+        Returns:
+            The User ID associated with the session,
+            or None if the session is invalid or expired.
+        """
         if session_id is None:
             return None
         user_session = self.user_id_by_session_id.get(session_id)
