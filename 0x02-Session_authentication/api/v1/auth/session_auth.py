@@ -21,8 +21,8 @@ class SessionAuth(Auth):
         Returns:
             The generated session ID.
         """
-        if not user_id or type(user_id) != str:
-            return
+        if user_id is None or type(user_id) != str:
+            return None
         session_id = str(uuid4())
         SessionAuth.user_id_by_session_id[user_id] = session_id
         return session_id
