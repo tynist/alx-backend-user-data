@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """
-Session_Auth
+Session Authentication
 """
-
 from api.v1.auth.auth import Auth
-from typing import TypeVar
 from uuid import uuid4
 from models.user import User
 
@@ -49,8 +47,28 @@ class SessionAuth(Auth):
         Returns:
             The current User object, or None if not found.
         """
-        if request:
-            session_cookie = self.session_cookie(request)
-            if session_cookie:
-                user_id = self.user_id_for_session_id(session_cookie)
-                return User.get(user_id)
+        session_cookies = self.session_cookie(request)
+        if session_cookies is None:
+            return None
+        user_id = self.user_id_for_session_id(session_cookies)
+        return User.get(user_id)
+
+    def destroy_session(self, request=None):
+        """
+        Deletes the user session, effectively logging out the user.
+        Args:
+            request: The request object that may contain a session cookie.
+        Returns:
+            - True if the session was successfully destroyed.
+            - False if the session could not be destroyed.
+        """
+        if request is None:
+            return False
+        session_cookies = self.session_cookie(request)
+        if not session_cookies:
+            return False
+        user_id = self.user_id_for_session_id(session_cookies)
+        if not user_id:
+            return False
+        del self.user_id_by_session_id[session_cookies]
+        return True
