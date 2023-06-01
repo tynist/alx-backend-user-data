@@ -4,8 +4,6 @@ Route module for the API
 """
 from os import getenv
 from api.v1.views import app_views
-from api.v1.auth.session_auth import SessionAuth
-from api.v1.auth.basic_auth import BasicAuth
 from flask import Flask, abort, jsonify, request
 from flask_cors import (CORS, cross_origin)
 import os
@@ -16,12 +14,21 @@ app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
 
-if getenv("AUTH_TYPE") == "auth":
+if os.getenv('AUTH_TYPE') == 'auth':
+    from api.v1.auth.auth import Auth
     auth = Auth()
-elif getenv("AUTH_TYPE") == "basic_auth":
+elif os.getenv('AUTH_TYPE') == 'basic_auth':
+    from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
-elif getenv("AUTH_TYPE") == "session_auth":
+elif os.getenv('AUTH_TYPE') == 'session_auth':
+    from api.v1.auth.session_auth import SessionAuth
     auth = SessionAuth()
+elif os.getenv('AUTH_TYPE') == 'session_exp_auth':
+    from api.v1.auth.session_exp_auth import SessionExpAuth
+    auth = SessionExpAuth()
+elif os.getenv('AUTH_TYPE') == 'session_db_auth':
+    from api.v1.auth.session_db_auth import SessionDBAuth
+    auth = SessionDBAuth()
 
 
 @app.before_request
@@ -29,19 +36,22 @@ def before_request():
     """
     handler before_request
     """
-    authorized_list = ['/api/v1/status/',
-                       '/api/v1/unauthorized/', '/api/v1/forbidden/',
-                       '/api/v1/auth_session/login/']
+   if auth is None:
+        pass
+    else:
+        if auth.require_auth(request.path, [
+                             '/api/v1/status/',
+                             '/api/v1/unauthorized/',
+                             '/api/v1/forbidden/',
+                             '/api/v1/auth_session/login/'
+                             ]):
+            if auth.authorization_header(request) is None \
+               and auth.session_cookie(request) is None:
+                abort(401)
+            if auth.current_user(request) is None:
+                abort(403)
 
-    if auth and auth.require_auth(request.path, authorized_list):
-        if not auth.authorization_header(request):
-            abort(401)
-        if (auth.authorization_header(request) and
-            not auth.session_cookie(request)):
-            abort(401)
-        request.current_user = auth.current_user(request)
-        if not auth.current_user(request):
-            abort(403)
+    request.current_user = auth.current_user(request)
 
 
 @app.errorhandler(404)
