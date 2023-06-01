@@ -16,7 +16,6 @@ class Auth:
         """
         Require authentication for all the paths except the ones in
         exclude_paths
-
         Return:
             - True if the path is not in the list of strings exclude_paths
             else False
@@ -29,14 +28,17 @@ class Auth:
             regex = re.compile(exclude_path)
             if regex.search(path):
                 return False
-
         return True
 
     def authorization_header(self, request=None) -> str:
         """
-        Return:
+        Returns:
             - the value of the header request Authorization or None
             if request doesn't contain Authorization header
+        Args:
+            request: The request object.
+        Returns:
+            The value of the Authorization header or None.
         """
         if request is None:
             return None
@@ -51,8 +53,11 @@ class Auth:
 
     def session_cookie(self, request=None):
         """
-        Return:
-            - the value of the cookie request.session_id or None
+        Returns the current user.
+        Args:
+            request: The request object.
+        Returns:
+            The current user.
         """
         if request is None:
             return None
