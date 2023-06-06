@@ -3,7 +3,7 @@
 Authentication module
 """
 
-import bcrypt
+import bcrypt, uuid
 from db import DB
 from user import User
 from uuid import uuid4
