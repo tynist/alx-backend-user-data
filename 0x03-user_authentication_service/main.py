@@ -7,17 +7,20 @@ import requests
 
 BASE_URL = "http://localhost:5000"
 
+
 def register_user(email: str, password: str) -> None:
     """Register a new user."""
     res = requests.post(f"{BASE_URL}/users",
                         data={"email": email, "password": password})
     assert res.status_code == 200
 
+
 def log_in_wrong_password(email: str, password: str) -> None:
     """Attempt to log in with wrong password."""
     res = requests.post(f"{BASE_URL}/sessions",
                         data={"email": email, "password": password})
     assert res.status_code == 401
+
 
 def log_in(email: str, password: str) -> str:
     """Log in a user and return session ID."""
@@ -27,10 +30,12 @@ def log_in(email: str, password: str) -> str:
     session_id = res.cookies.get("session_id")
     return session_id
 
+
 def profile_unlogged() -> None:
     """Access the user profile without logging in"""
     res = requests.get(f"{BASE_URL}/profile")
     assert res.status_code == 403
+
 
 def profile_logged(session_id: str) -> None:
     """Access the user profile with the given session ID"""
@@ -39,11 +44,13 @@ def profile_logged(session_id: str) -> None:
     assert res.status_code == 200
     data = res.json()
 
+
 def log_out(session_id: str) -> None:
     """Log out the user with the given session ID."""
     headers = {"Cookie": f"session_id={session_id}"}
     res = requests.delete(f"{BASE_URL}/sessions", headers=headers)
     assert res.status_code == 302
+
 
 def reset_password_token(email: str) -> str:
     """Request a reset password token with the given email."""
@@ -53,6 +60,7 @@ def reset_password_token(email: str) -> str:
     data = res.json()
     reset_token = data["reset_token"]
     return reset_token
+
 
 def update_password(email: str, reset_token: str, new_password: str) -> None:
     """Update the user's password with the given reset token."""
