@@ -3,10 +3,10 @@
 Authentication module
 """
 
-from uuid import uuid4
 import bcrypt
 from db import DB
 from user import User
+from uuid import uuid4
 from sqlalchemy.orm.exc import NoResultFound
 from typing import Union
 
@@ -155,8 +155,6 @@ class Auth:
         if user is None:
             raise ValueError('Invalid reset token')
         hashed_password = _hash_password(password)
-        self._db.update_user(
-            user.id,
+        self._db.update_user(user.id,
             hashed_password=hashed_password,
-            reset_token=None
-        )
+            reset_token=None)
