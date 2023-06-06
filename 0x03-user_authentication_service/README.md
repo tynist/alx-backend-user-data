@@ -788,20 +788,22 @@ Find the user corresponding to the email. If the user does not exist, raise a Va
 
 
 
-17. Get reset password token
+### 17\. Get reset password token
 
-In this task, you will implement a get_reset_password_token function to respond to the POST /reset_password route.
+In this task, you will implement a `get_reset_password_token` function to respond to the `POST /reset_password` route.
 
-The request is expected to contain form data with the "email" field.
+The request is expected to contain form data with the `"email"` field.
 
 If the email is not registered, respond with a 403 status code. Otherwise, generate a token and respond with a 200 HTTP status and the following JSON payload:
 
+```
 {"email": "<user email>", "reset_token": "<reset token>"}
-Repo:
+```
 
-GitHub repository: alx-backend-user-data
-Directory: 0x03-user_authentication_service
-File: app.py
+**Repo:**
+-  GitHub repository: `alx-backend-user-data`
+-  Directory: `0x03-user_authentication_service`
+-  File: `app.py`
 
  
 
@@ -841,20 +843,20 @@ If the token is valid, respond with a 200 HTTP code and the following JSON paylo
  
 
 
-20. End-to-end integration test
-#advanced
+### 20\. End-to-end integration test
+
 Start your app. Open a new terminal window.
 
-Create a new module called main.py. Create one function for each of the following tasks. Use the requests module to query your web server for the corresponding end-point. Use assert to validate the response’s expected status code and payload (if any) for each task.
+Create a new module called `main.py`. Create one function for each of the following tasks. Use the `requests` module to query your web server for the corresponding end-point. Use `assert` to validate the response’s expected status code and payload (if any) for each task.
 
--  register_user(email: str, password: str) -> None
-log_in_wrong_password(email: str, password: str) -> None
-log_in(email: str, password: str) -> str
-profile_unlogged() -> None
-profile_logged(session_id: str) -> None
-log_out(session_id: str) -> None
-reset_password_token(email: str) -> str
-update_password(email: str, reset_token: str, new_password: str) -> None
+-  `register_user(email: str, password: str) -> None`
+-  `log_in_wrong_password(email: str, password: str) -> None`
+-  `log_in(email: str, password: str) -> str`
+-  `profile_unlogged() -> None`
+-  `profile_logged(session_id: str) -> None`
+-  `log_out(session_id: str) -> None`
+-  `reset_password_token(email: str) -> str`
+-  `pdate_password(email: str, reset_token: str, new_password: str) -> None`
 
 Then copy the following code at the end of the main module:
 
