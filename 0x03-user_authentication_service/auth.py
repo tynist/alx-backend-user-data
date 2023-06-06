@@ -95,7 +95,7 @@ class Auth:
         Args:
             session_id: The session ID to search for.
         Returns:
-            Union[User, None]: corresponding User object if found, None otherwise
+        Union[User, None]: corresponding User object if found, None otherwise
         """
         user = None
         if session_id is None:
@@ -155,6 +155,7 @@ class Auth:
         if user is None:
             raise ValueError('Invalid reset token')
         hashed_password = _hash_password(password)
-        self._db.update_user(user.id,
-                            hashed_password=hashed_password,
-                            reset_token=None)
+        self._db.update_user(
+            user.id,
+            hashed_password=hashed_password,
+            reset_token=None)
