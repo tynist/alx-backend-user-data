@@ -79,7 +79,7 @@ class Auth:
         Args:
             email (str): The user's email address.
         Returns:
-            Union[None, str]: The session ID if the user is found, None otherwise.
+            Union[None, str]: session ID if the user is found, None otherwise
         """
         try:
             user = self._db.find_user_by(email=email)
@@ -95,7 +95,7 @@ class Auth:
         Args:
             session_id: The session ID to search for.
         Returns:
-            Union[User, None]: The corresponding User object if found, None otherwise
+            Union[User, None]: corresponding User object if found, None otherwise
         """
         user = None
         if session_id is None:
@@ -106,10 +106,10 @@ class Auth:
             return None
         return user
 
-        def destroy_session(self, user_id: int) -> None:
+    def destroy_session(self, user_id: int) -> None:
         """Destroy a user's session by providing the user_id.
         Args:
-            user_id (int): The ID of the user whose session needs to be destroyed.
+            user_id (int): ID of user whose session needs to be destroyed
         Returns:
             None
         """
@@ -138,7 +138,7 @@ class Auth:
         return reset_token
 
     def update_password(self, reset_token: str, password: str) -> None:
-        """Update a user's password by providing the reset token and new password
+        """Update user's password by providing reset token & new password
         Args:
             reset_token (str): The reset token for the user.
             password (str): The new password for the user.
@@ -156,5 +156,5 @@ class Auth:
             raise ValueError('Invalid reset token')
         hashed_password = _hash_password(password)
         self._db.update_user(user.id,
-            hashed_password=hashed_password,
-            reset_token=None)
+                            hashed_password=hashed_password,
+                            reset_token=None)
